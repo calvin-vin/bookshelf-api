@@ -65,11 +65,45 @@ const addBooksHandler = (request, h) => {
   return response;
 };
 
-const getAllBooksHandler = () => ({
-  status: 'success',
-  data: {
-    books: books.map((e) => ({id: e.id, name: e.name, publisher: e.publisher})),
-  },
-});
+const getAllBooksHandler = (request, h) => {
+  const {name, reading, finished} = request.query;
+  const response = {
+    status: 'success',
+    data: {
+      books: books,
+    },
+  };
+  // Query parameter nama
+  if (name) {
+    response.data.books = response.data.books.filter((book) => {
+      return book.name.toLowerCase().includes(name.toLowerCase());
+    });
+  }
+  // Query parameter reading
+  if (reading === '0') {
+    response.data.books = response.data.books.filter((book) => {
+      return book.reading == false;
+    });
+  } else if (reading === '1') {
+    response.data.books = response.data.books.filter((book) => {
+      return book.reading == true;
+    });
+  }
+  // Query parameter finished
+  if (finished === '0') {
+    response.data.books = response.data.books.filter((book) => {
+      return book.finished == false;
+    });
+  } else if (finished === '1') {
+    response.data.books = response.data.books.filter((book) => {
+      return book.finished == true;
+    });
+  }
+  // Mapping menjadi data baru
+  response.data.books = response.data.books.map((book) => ({
+    id: book.id, name: book.name, publisher: book.publisher,
+  }));
+  return h.response(response);
+};
 
 module.exports = {addBooksHandler, getAllBooksHandler};
