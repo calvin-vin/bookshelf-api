@@ -73,13 +73,13 @@ const getAllBooksHandler = (request, h) => {
       books: books,
     },
   };
-  // Query parameter nama
+  // Query parameter -> name
   if (name) {
     response.data.books = response.data.books.filter((book) => {
       return book.name.toLowerCase().includes(name.toLowerCase());
     });
   }
-  // Query parameter reading
+  // Query parameter -> reading
   if (reading === '0') {
     response.data.books = response.data.books.filter((book) => {
       return book.reading == false;
@@ -89,7 +89,7 @@ const getAllBooksHandler = (request, h) => {
       return book.reading == true;
     });
   }
-  // Query parameter finished
+  // Query parameter -> finished
   if (finished === '0') {
     response.data.books = response.data.books.filter((book) => {
       return book.finished == false;
@@ -106,4 +106,23 @@ const getAllBooksHandler = (request, h) => {
   return h.response(response);
 };
 
-module.exports = {addBooksHandler, getAllBooksHandler};
+const getBookById = (request, h) => {
+  const {id} = request.params;
+  const book = books.find((book) => book.id == id);
+  if (book) {
+    return {
+      status: 'success',
+      data: {
+        book,
+      },
+    };
+  }
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku tidak ditemukan',
+  });
+  response.code(404);
+  return response;
+};
+
+module.exports = {addBooksHandler, getAllBooksHandler, getBookById};
